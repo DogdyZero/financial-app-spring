@@ -13,7 +13,7 @@
         
         <property name="hibernate.connection.driver_class">org.postgresql.Driver</property>
         <property name="hibernate.connection.password">3d1a8d8d035e589a3120155feb08565c911ae645f345b828fb63c8f17618a138</property>
-        <property name="hibernate.connection.url">jdbc:postgres://ec2-50-19-222-129.compute-1.amazonaws.com:5432/d6u49u104fnpn</property>
+        <property name="hibernate.connection.url">jdbc:postgres://etfzzwzviqjgmv:3d1a8d8d035e589a3120155feb08565c911ae645f345b828fb63c8f17618a138@ec2-50-19-222-129.compute-1.amazonaws.com:5432/d6u49u104fnpn</property>
         <property name="hibernate.connection.username">etfzzwzviqjgmv</property>
         <property name="hibernate.dialect">org.hibernate.dialect.PostgreSQLDialect</property>
         
