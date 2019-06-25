@@ -18,6 +18,7 @@ import br.com.financial_app.domain.Usuario;
 public class UsuarioController {
 	@Autowired
 	private ApplicationContext context;
+	
 	@CrossOrigin
 	@PostMapping("/salvar") 
 	public Resultado salvarUsuario(@RequestBody Usuario usuario) {
