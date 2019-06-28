@@ -16,7 +16,7 @@ requisição rest de teste
 requisição post, parametro objeto usuario, (login,senha);
 url: https://financial-app-v2.herokuapp.com/login
 
-Exemplo requisição httpClient
+Exemplo requisição httpClient - TypeScript
 
 logar(usuario:Usuario){
 		let url = 'https://financial-app-v2.herokuapp.com/login';
