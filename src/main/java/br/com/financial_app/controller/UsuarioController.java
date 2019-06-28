@@ -39,7 +39,6 @@ public class UsuarioController {
 	@CrossOrigin
 	@PostMapping("/login") 
 	public Resultado validarSenha(@RequestBody Usuario usuario) {
-		System.out.println("login:" + usuario.getLogin() + " e Senha: "+ usuario.getSenha());
 		Facede facede = Facede.getInstance(usuario);
 		List<EntidadeDominio> resultado = facede.listaEntidades(usuario, "login");
 		if(resultado != null) {
