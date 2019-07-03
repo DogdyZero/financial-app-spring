@@ -9,7 +9,6 @@ import br.com.financial_app.domain.EntidadeDominio;
 import br.com.financial_app.domain.Usuario;
 
 public class UsuarioQuery implements IStrategyQuery {
-	private static UsuarioQuery usuarioQuery;
 	private Map<String,String> mapQuery;
 	private Map<String,List<Object>> mapParameters;
 	private Usuario usuario;

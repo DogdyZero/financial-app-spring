@@ -1,11 +1,14 @@
 package br.com.financial_app.persistence;
 
-import br.com.financial_app.domain.EntidadeDominio;
-import br.com.financial_app.persistency.queries.UsuarioQuery;
+import org.springframework.stereotype.Service;
 
+import br.com.financial_app.domain.EntidadeDominio;
+
+@Service
 public class UsuarioDAO extends AbstractDAO {
 	
-	public UsuarioDAO(EntidadeDominio entidade) {
+	@Override
+	public void setAbstractEntity(EntidadeDominio entidade) {
 		super.entidade = entidade;
 	}
 }

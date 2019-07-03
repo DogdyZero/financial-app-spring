@@ -8,7 +8,7 @@ import javax.persistence.Table;
 
 import org.springframework.stereotype.Component;
 
-@Component
+
 @Entity
 @Table(name="usuario")
 public class Usuario extends EntidadeDominio {
@@ -16,7 +16,7 @@ public class Usuario extends EntidadeDominio {
 	@Id
 	@GeneratedValue
 	@Column(name="usu_id")
-	private int id;
+	private long id;
 	
 	@Column(name="usu_login")
 	private String login;
@@ -33,11 +33,11 @@ public class Usuario extends EntidadeDominio {
 		this.senha = senha;
 	}
 	
-	public int getId() {
+	public long getId() {
 		return id;
 	}
 	
-	public void setId(int id) {
+	public void setId(long id) {
 		this.id = id;
 	}
 	

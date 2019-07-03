@@ -5,12 +5,19 @@ import java.util.List;
 import org.hibernate.Query;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.support.JpaRepositoryFactory;
+import org.springframework.stereotype.Service;
 
 import br.com.financial_app.domain.EntidadeDominio;
+import br.com.financial_app.domain.Usuario;
 import br.com.financial_app.persistency.queries.FactoryQuery;
 import br.com.financial_app.persistency.queries.IFactoryQuery;
 import br.com.financial_app.persistency.queries.IStrategyQuery;
+import br.com.financial_app.repository.UsuarioRepository;
 
+@Service
 public abstract class AbstractDAO implements IDAO{
 	private int contador =1;
 	protected String tipoConsulta;
@@ -18,7 +25,10 @@ public abstract class AbstractDAO implements IDAO{
 	protected EntidadeDominio entidade;
 	protected SessionFactory sessionFactory;
 	protected Session session;
-
+	
+	@Autowired
+	private UsuarioRepository repository;
+	
 	protected void iniciarTransacao() {
 		SessionConfigApplication ss = SessionConfigApplication.getInstanceSession();
 		this.session = ss.getInstanceSessionFactory().openSession();
@@ -33,9 +43,11 @@ public abstract class AbstractDAO implements IDAO{
 	@Override
 	public String salvar(EntidadeDominio entidade) {
 		try {
-			iniciarTransacao();
-			this.session.save(entidade);
-			finalizarTransacao();
+			Usuario usuario = (Usuario) entidade;
+//			iniciarTransacao();
+//			this.session.save(entidade);
+//			finalizarTransacao();
+			repository.save(usuario);
 		} catch (Exception e) {
 			return e.toString();
 		}
