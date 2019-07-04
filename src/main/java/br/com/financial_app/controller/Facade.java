@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 
 import br.com.financial_app.domain.EntidadeDominio;
 import br.com.financial_app.factory.IFactoryDao;
+import br.com.financial_app.persistence.IDAO;
 
 @Service
 public class Facade {
@@ -21,8 +22,9 @@ public class Facade {
 //		if(msg!=null) {
 //			return msg;
 //		}
-		
-		return factoryDao.getDaoInstance(entidade).salvar(entidade);
+		IDAO dao = factoryDao.getDaoInstance(entidade);
+		dao.setAbstractEntity(entidade);
+		return dao.salvar(entidade);
 	}
 
 	public String alterar(EntidadeDominio entidade) {

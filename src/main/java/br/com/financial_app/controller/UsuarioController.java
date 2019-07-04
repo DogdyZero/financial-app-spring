@@ -3,7 +3,8 @@ package br.com.financial_app.controller;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.ApplicationContext;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -14,7 +15,6 @@ import org.springframework.web.bind.annotation.RestController;
 import br.com.financial_app.domain.EntidadeDominio;
 import br.com.financial_app.domain.Resultado;
 import br.com.financial_app.domain.Usuario;
-import br.com.financial_app.repository.UsuarioRepository;
 
 @RestController
 @RequestMapping("usuarios")
@@ -25,12 +25,13 @@ public class UsuarioController {
 	
 	@CrossOrigin
 	@PostMapping("/salvar") 
-	public Resultado salvarUsuario(@RequestBody Usuario usuario) {
+	public ResponseEntity<Resultado> salvarUsuario(@RequestBody Usuario usuario) {
 		String resultado = facade.salvar(usuario);
 		if(resultado==null)
-			return new Resultado("Sucesso");
-		else
-			return new Resultado("Erro ao processar requisição!");
+			return new ResponseEntity<Resultado>(HttpStatus.CREATED);
+		else 
+			return new ResponseEntity<Resultado>(HttpStatus.BAD_REQUEST);
+		
 	}
 	
 	@CrossOrigin
