@@ -37,16 +37,20 @@ public abstract class AbstractDAO implements IDAO{
 		this.session.close();
 	}
 	
+	
+	private Usuario testeCast(EntidadeDominio entidade) {
+		
+		return Usuario.class.cast(entidade);
+	}
+	
 	@Override
 	public String salvar(EntidadeDominio entidade) {
 		try {
 			if(entidade.getClass().getName()
 					.equals(Usuario.class.getName())) {
-
-			UsuarioRepository rep = (UsuarioRepository) repository;
-			System.out.println("teste");
-				Usuario usuario = (Usuario)entidade;
-				rep.save(usuario);
+				
+				UsuarioRepository.class.cast(repository).
+					save(testeCast(entidade));
 			}
 //			iniciarTransacao();
 //			this.session.save(entidade);
