@@ -1,5 +1,6 @@
 package br.com.financial_app.persistence;
 
+import java.lang.reflect.Method;
 import java.util.List;
 
 import org.hibernate.Query;
@@ -45,13 +46,13 @@ public abstract class AbstractDAO implements IDAO{
 	
 	@Override
 	public String salvar(EntidadeDominio entidade) {
+		
 		try {
-			if(entidade.getClass().getName()
-					.equals(Usuario.class.getName())) {
-				
-				UsuarioRepository.class.cast(repository).
-					save(testeCast(entidade));
-			}
+			Class<?> classe = repository.getClass();
+			
+			Method m = classe.getMethod("save", Object.class);
+			m.invoke(repository, entidade);
+			
 //			iniciarTransacao();
 //			this.session.save(entidade);
 //			finalizarTransacao();
@@ -64,10 +65,15 @@ public abstract class AbstractDAO implements IDAO{
 	@Override
 	public String alterar(EntidadeDominio entidade) {
 		try {
-			iniciarTransacao();
-			this.session.update(entidade);
-
-			finalizarTransacao();
+			Class<?> classe = repository.getClass();
+			
+			Method m = classe.getMethod("save", Object.class);
+			m.invoke(repository, entidade);
+			
+//			iniciarTransacao();
+//			this.session.update(entidade);
+//
+//			finalizarTransacao();
 		} catch (Exception e) {
 			return e.toString();
 		}
@@ -81,7 +87,7 @@ public abstract class AbstractDAO implements IDAO{
 		this.fabricaQuery = FactoryQuery.getInstance(entidade);
 		IStrategyQuery strategyQuery= this.fabricaQuery.createObjQuery(entidade);
 		
-		Query query = session.createQuery(
+		Query<EntidadeDominio> query = session.createQuery(
 				strategyQuery.gerarString(getTipoConsulta()));
 		
 		List<Object> listaObj = strategyQuery.retornoParametros();
