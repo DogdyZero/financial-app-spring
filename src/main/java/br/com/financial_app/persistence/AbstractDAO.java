@@ -1,5 +1,6 @@
 package br.com.financial_app.persistence;
 
+import java.lang.reflect.Method;
 import java.util.List;
 
 import org.hibernate.Query;
@@ -8,12 +9,10 @@ import org.hibernate.SessionFactory;
 import org.springframework.stereotype.Service;
 
 import br.com.financial_app.domain.EntidadeDominio;
-import br.com.financial_app.domain.Usuario;
 import br.com.financial_app.persistency.queries.FactoryQuery;
 import br.com.financial_app.persistency.queries.IFactoryQuery;
 import br.com.financial_app.persistency.queries.IStrategyQuery;
 import br.com.financial_app.repository.EntidadeRepository;
-import br.com.financial_app.repository.UsuarioRepository;
 
 @Service
 public abstract class AbstractDAO implements IDAO{
@@ -38,20 +37,13 @@ public abstract class AbstractDAO implements IDAO{
 	}
 	
 	
-	private Usuario testeCast(EntidadeDominio entidade) {
-		
-		return Usuario.class.cast(entidade);
-	}
-	
 	@Override
 	public String salvar(EntidadeDominio entidade) {
 		try {
-			if(entidade.getClass().getName()
-					.equals(Usuario.class.getName())) {
-				
-				UsuarioRepository.class.cast(repository).
-					save(testeCast(entidade));
-			}
+			Class<?> classe = repository.getClass();
+			
+			Method m = classe.getMethod("save", Object.class);
+			m.invoke(repository, entidade);
 //			iniciarTransacao();
 //			this.session.save(entidade);
 //			finalizarTransacao();
