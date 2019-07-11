@@ -49,7 +49,7 @@ public class UsuarioController {
 			return new ResponseEntity<Resultado>(HttpStatus.OK);
 
 		}else {
-			return new ResponseEntity<Resultado>(HttpStatus.NO_CONTENT);
+			return new ResponseEntity<Resultado>(HttpStatus.UNAUTHORIZED);
 		}
 	}
 			
