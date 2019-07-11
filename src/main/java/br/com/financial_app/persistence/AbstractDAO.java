@@ -39,11 +39,13 @@ public abstract class AbstractDAO implements IDAO{
 	
 	@Override
 	public String salvar(EntidadeDominio entidade) {
+		
 		try {
 			Class<?> classe = repository.getClass();
 			
 			Method m = classe.getMethod("save", Object.class);
 			m.invoke(repository, entidade);
+
 //			iniciarTransacao();
 //			this.session.save(entidade);
 //			finalizarTransacao();
@@ -56,10 +58,15 @@ public abstract class AbstractDAO implements IDAO{
 	@Override
 	public String alterar(EntidadeDominio entidade) {
 		try {
-			iniciarTransacao();
-			this.session.update(entidade);
-
-			finalizarTransacao();
+			Class<?> classe = repository.getClass();
+			
+			Method m = classe.getMethod("save", Object.class);
+			m.invoke(repository, entidade);
+			
+//			iniciarTransacao();
+//			this.session.update(entidade);
+//
+//			finalizarTransacao();
 		} catch (Exception e) {
 			return e.toString();
 		}
@@ -73,7 +80,7 @@ public abstract class AbstractDAO implements IDAO{
 		this.fabricaQuery = FactoryQuery.getInstance(entidade);
 		IStrategyQuery strategyQuery= this.fabricaQuery.createObjQuery(entidade);
 		
-		Query query = session.createQuery(
+		Query<EntidadeDominio> query = session.createQuery(
 				strategyQuery.gerarString(getTipoConsulta()));
 		
 		List<Object> listaObj = strategyQuery.retornoParametros();

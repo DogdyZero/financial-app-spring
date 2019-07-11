@@ -43,12 +43,14 @@ public class UsuarioController {
 
 	@CrossOrigin
 	@PostMapping("/login") 
-	public Resultado validarSenha(@RequestBody Usuario usuario) {
+	public ResponseEntity<Resultado> validarSenha(@RequestBody Usuario usuario) {
 		List<EntidadeDominio> resultado = facade.buscar(usuario, "login");
 		if(resultado != null) {
-			return new Resultado("Login Efetuado com sucesso!");
+			return new ResponseEntity<Resultado>(HttpStatus.OK);
+
+		}else {
+			return new ResponseEntity<Resultado>(HttpStatus.NO_CONTENT);
 		}
-		return new Resultado("Usuario ou senha não localizados");
 	}
 			
 }
