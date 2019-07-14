@@ -5,9 +5,6 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
-import org.springframework.security.oauth2.config.annotation.web.configuration.EnableResourceServer;
-
-import br.com.financial_app.repository.UsuarioRepository;
 
 @EntityScan("br.com.financial_app.domain")
 @ComponentScan("br.com.financial_app")

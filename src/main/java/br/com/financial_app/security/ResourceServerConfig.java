@@ -11,7 +11,6 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.oauth2.config.annotation.web.configuration.EnableResourceServer;
 
 @Configuration
@@ -19,14 +18,14 @@ import org.springframework.security.oauth2.config.annotation.web.configuration.E
 @EnableResourceServer
 public class ResourceServerConfig extends WebSecurityConfigurerAdapter {
 	
-//	@Autowired
-//	private UserDetailsService userDetailsService;
+	@Autowired
+	private UserDetailsService userDetailsService;
 	
 	@Autowired
 	public void configure(AuthenticationManagerBuilder auth) throws Exception {
-		//auth.userDetailsService(userDetailsService).passwordEncoder(passwordEncoder());
-		auth.inMemoryAuthentication()
-		.withUser("admin").password("{noop}ads").roles("ROLE");
+		auth.userDetailsService(userDetailsService).passwordEncoder(new BCryptPasswordEncoder());
+//		auth.inMemoryAuthentication()
+//		.withUser("admin").password("{noop}ads").roles("ROLE");
 	}
 	
 	@Override
@@ -52,5 +51,7 @@ public class ResourceServerConfig extends WebSecurityConfigurerAdapter {
 //    public PasswordEncoder passwordEncoder() {
 //    	return new BCryptPasswordEncoder();
 //    }
+    
+    
     
 }

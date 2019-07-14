@@ -1,18 +1,14 @@
 package br.com.financial_app.persistence;
 
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.userdetails.User;
+import org.springframework.security.core.userdetails.User.UserBuilder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import br.com.financial_app.domain.EntidadeDominio;
@@ -44,13 +40,17 @@ public class UsuarioDAO extends AbstractDAO implements UserDetailsService{
 	@Override
 	public UserDetails loadUserByUsername(String nome) throws UsernameNotFoundException {
 		Usuario usuario = usuarioRepository.findByLogin(nome);
-		return new User(nome, usuario.getSenha(),getPermissoes(usuario));
-	}
-	private Collection<? extends GrantedAuthority> getPermissoes(Usuario usuario){
-		Set<SimpleGrantedAuthority> permissoes = new HashSet<>();
-		permissoes.add(new SimpleGrantedAuthority("ROLE_CADASTRAR"));
-		return permissoes;
-		
+		UserBuilder builder=null;
+		if (usuario != null) {
+		      builder = org.springframework.security.core.userdetails.User.withUsername(nome);
+		      builder.password(new BCryptPasswordEncoder().encode(usuario.getSenha()));
+		      String [] regras = {"ADMIN"};
+		      builder.roles(regras);
+		    } else {
+		      throw new UsernameNotFoundException("User not found.");
+		    }
+
+		    return builder.build();
 	}
 	
 	
