@@ -26,17 +26,7 @@ public class UsuarioDAO extends AbstractDAO implements UserDetailsService{
 		super.entidade = entidade;
 		super.repository = usuarioRepository;
 	}
-	public List<EntidadeDominio> consulta(EntidadeDominio entidade) {
-		List<EntidadeDominio> usuarios = new ArrayList<EntidadeDominio>();
-		Usuario u = Usuario.class.cast(entidade);
-		u = usuarioRepository.findByLoginAndSenha(u.getLogin(),u.getSenha());
-		if(u!=null) {
-			usuarios.add(u);
-			return usuarios;
-		} else {
-			return null;
-		}
-	}
+
 	@Override
 	public UserDetails loadUserByUsername(String nome) throws UsernameNotFoundException {
 		Usuario usuario = usuarioRepository.findByLogin(nome);

@@ -1,6 +1,9 @@
 package br.com.financial_app.persistence;
 
+import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.hibernate.Query;
@@ -9,6 +12,7 @@ import org.hibernate.SessionFactory;
 import org.springframework.stereotype.Service;
 
 import br.com.financial_app.domain.EntidadeDominio;
+import br.com.financial_app.domain.Usuario;
 import br.com.financial_app.persistency.queries.FactoryQuery;
 import br.com.financial_app.persistency.queries.IFactoryQuery;
 import br.com.financial_app.persistency.queries.IStrategyQuery;
@@ -76,31 +80,114 @@ public abstract class AbstractDAO implements IDAO{
 
 
 	public List<EntidadeDominio> consulta(EntidadeDominio entidade) {
-		iniciarTransacao();
-		this.fabricaQuery = FactoryQuery.getInstance(entidade);
-		IStrategyQuery strategyQuery= this.fabricaQuery.createObjQuery(entidade);
+		List<EntidadeDominio> entidades =  new ArrayList<>();
+		// testar consulta login e senha
 		
-		Query<EntidadeDominio> query = session.createQuery(
-				strategyQuery.gerarString(getTipoConsulta()));
+		// verificar a string de entrada
+		// verificar qual é o tipo do objeto do repositorio que se deve consultar
+		// pegar os metodos de consulta, exemplo findByLoginAndSenha
 		
-		List<Object> listaObj = strategyQuery.retornoParametros();
-		contador =1;
-		if(listaObj!=null) {
-			for (Object ob :listaObj) {
-				String parametro = "param"+contador;
-				
-				query.setParameter(parametro, ob);
-				contador++;
+		Class<?> classeRepositorio = repository.getClass();
+		Class<?>[] interfaces = classeRepositorio.getInterfaces();
+
+		
+		String param = this.tipoConsulta;
+		
+		//considerando que o usuario digitou LoginAndSenha
+		String tipoParametro = "findBy"+param;
+		
+		// descobrir os atributos da classe
+		
+		Class<?> classeEntidade = entidade.getClass();
+		Class<?> nomeRepositorio = null;
+		
+		for(Class<?> inter: interfaces) {
+			if(inter.getName().contains(classeEntidade.getSimpleName())) {
+				nomeRepositorio = inter;
 			}
 		}
+		
+		
+		Method[] metodos = classeEntidade.getDeclaredMethods();
+		// descobrir os tipos dos parametros e salvar em uma array
+		
+		String[] parametros = param.split("And");
+		
+		String[] objMetodos = new String[parametros.length];
+		Class<?>[] objType= new Class<?>[parametros.length];
+		
+		int i =0;
+		for(Method m : metodos) {
+			for(String p : parametros) {
+				if(m.getName().contains("get"+p)) {
+					try {
+						objMetodos[i] =m.getName();
+						objType[i]=m.getReturnType();
+						i++;
 
-        List<EntidadeDominio> resultado =query.list();
-        finalizarTransacao();
-
-        if(resultado.size()==0) {
-        	return null;
-        }
-		return resultado;
+					} catch (IllegalArgumentException e) {
+						e.printStackTrace();
+					}
+				}
+			}	
+		}
+		Object[] invocarMetodos = new Object[parametros.length];
+		i=parametros.length-1;
+		for(String s : objMetodos) {
+			try {
+				Method m = classeEntidade.getMethod(s);
+				invocarMetodos[i] = m.invoke(entidade);
+				i--;
+			} catch (NoSuchMethodException | SecurityException | IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
+				e.printStackTrace();
+			}
+		}
+		
+		try {
+			
+			Method method = nomeRepositorio.getMethod(tipoParametro,objType);
+			
+			Object resultado = method.invoke(repository, invocarMetodos);
+			
+			if(resultado !=null) {
+				
+				entidades.add((EntidadeDominio) resultado);
+				return entidades;
+			}
+			
+			return null;
+		} catch (NoSuchMethodException | SecurityException | IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
+			e.printStackTrace();
+		}
+		
+		
+		
+//		iniciarTransacao();
+//		this.fabricaQuery = FactoryQuery.getInstance(entidade);
+//		IStrategyQuery strategyQuery= this.fabricaQuery.createObjQuery(entidade);
+//		
+//		Query<EntidadeDominio> query = session.createQuery(
+//				strategyQuery.gerarString(getTipoConsulta()));
+//		
+//		List<Object> listaObj = strategyQuery.retornoParametros();
+//		contador =1;
+//		if(listaObj!=null) {
+//			for (Object ob :listaObj) {
+//				String parametro = "param"+contador;
+//				
+//				query.setParameter(parametro, ob);
+//				contador++;
+//			}
+//		}
+//
+//        List<EntidadeDominio> resultado =query.list();
+//        finalizarTransacao();
+//
+//        if(resultado.size()==0) {
+//        	return null;
+//        }
+//		return resultado;
+		return null;
 	}
 	
 	public String getTipoConsulta() {

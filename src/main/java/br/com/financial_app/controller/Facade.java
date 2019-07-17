@@ -43,7 +43,8 @@ public class Facade {
 
 	public List<EntidadeDominio> buscar(EntidadeDominio entidade, String tipoConsulta) {
 		IDAO dao = factoryDao.getDaoInstance(entidade);
-		
+		dao.setAbstractEntity(entidade);
+
 		dao.setTipoConsulta(tipoConsulta);
 		List<EntidadeDominio> resultado = dao.consulta(entidade);
 		if(resultado==null) {
