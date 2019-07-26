@@ -29,17 +29,6 @@ public abstract class AbstractDAO implements IDAO{
 	
 	protected EntidadeRepository<?> repository;
 	
-	protected void iniciarTransacao() {
-		SessionConfigApplication ss = SessionConfigApplication.getInstanceSession();
-		this.session = ss.getInstanceSessionFactory().openSession();
-		this.session.beginTransaction();
-	}
-	protected void finalizarTransacao() {
-		this.session.getTransaction().commit();
-		this.session.flush();
-		this.session.close();
-	}
-	
 	
 	@Override
 	public String salvar(EntidadeDominio entidade) {
@@ -50,9 +39,6 @@ public abstract class AbstractDAO implements IDAO{
 			Method m = classe.getMethod("save", Object.class);
 			m.invoke(repository, entidade);
 
-//			iniciarTransacao();
-//			this.session.save(entidade);
-//			finalizarTransacao();
 		} catch (Exception e) {
 			return e.toString();
 		}
@@ -67,10 +53,6 @@ public abstract class AbstractDAO implements IDAO{
 			Method m = classe.getMethod("save", Object.class);
 			m.invoke(repository, entidade);
 			
-//			iniciarTransacao();
-//			this.session.update(entidade);
-//
-//			finalizarTransacao();
 		} catch (Exception e) {
 			return e.toString();
 		}
@@ -81,41 +63,40 @@ public abstract class AbstractDAO implements IDAO{
 
 	public List<EntidadeDominio> consulta(EntidadeDominio entidade) {
 		List<EntidadeDominio> entidades =  new ArrayList<>();
-		// testar consulta login e senha
-		
-		// verificar a string de entrada
-		// verificar qual é o tipo do objeto do repositorio que se deve consultar
-		// pegar os metodos de consulta, exemplo findByLoginAndSenha
-		
+		// pegar a classe que entro repositorio para pegar a interface
 		Class<?> classeRepositorio = repository.getClass();
 		Class<?>[] interfaces = classeRepositorio.getInterfaces();
 
-		
+		// criar o tipo da consulta no repositório
 		String param = this.tipoConsulta;
-		
-		//considerando que o usuario digitou LoginAndSenha
 		String tipoParametro = "findBy"+param;
 		
-		// descobrir os atributos da classe
-		
+		// descobrir a classe da entidade
 		Class<?> classeEntidade = entidade.getClass();
 		Class<?> nomeRepositorio = null;
 		
+		// verificar se na interface tem o nome da classe
+		// OBS: como a consulta é pelo nome da classe, poderá ocorrer problemas, caso exista
+		// classes com nomes iguais em pacotes diferentes
+		// caso não exista o repositorio ocorrerá erro
 		for(Class<?> inter: interfaces) {
 			if(inter.getName().contains(classeEntidade.getSimpleName())) {
 				nomeRepositorio = inter;
 			}
 		}
 		
-		
+		// pegar todos os métodos da classe da entidade
 		Method[] metodos = classeEntidade.getDeclaredMethods();
-		// descobrir os tipos dos parametros e salvar em uma array
 		
+		// separar a string de entrada quando encontrar 'And'
 		String[] parametros = param.split("And");
+		parametros = param.split("Or");
+
 		
 		String[] objMetodos = new String[parametros.length];
 		Class<?>[] objType= new Class<?>[parametros.length];
 		
+		// procurar todos os métodos gets similar aos parametros de entrada
 		int i =0;
 		for(Method m : metodos) {
 			for(String p : parametros) {
@@ -131,6 +112,7 @@ public abstract class AbstractDAO implements IDAO{
 				}
 			}	
 		}
+		// criar array e invocar os metodos
 		Object[] invocarMetodos = new Object[parametros.length];
 		i=parametros.length-1;
 		for(String s : objMetodos) {
@@ -144,7 +126,7 @@ public abstract class AbstractDAO implements IDAO{
 		}
 		
 		try {
-			
+			// invocar o método de entrada do repositorio identificado
 			Method method = nomeRepositorio.getMethod(tipoParametro,objType);
 			
 			Object resultado = method.invoke(repository, invocarMetodos);
@@ -161,32 +143,6 @@ public abstract class AbstractDAO implements IDAO{
 		}
 		
 		
-		
-//		iniciarTransacao();
-//		this.fabricaQuery = FactoryQuery.getInstance(entidade);
-//		IStrategyQuery strategyQuery= this.fabricaQuery.createObjQuery(entidade);
-//		
-//		Query<EntidadeDominio> query = session.createQuery(
-//				strategyQuery.gerarString(getTipoConsulta()));
-//		
-//		List<Object> listaObj = strategyQuery.retornoParametros();
-//		contador =1;
-//		if(listaObj!=null) {
-//			for (Object ob :listaObj) {
-//				String parametro = "param"+contador;
-//				
-//				query.setParameter(parametro, ob);
-//				contador++;
-//			}
-//		}
-//
-//        List<EntidadeDominio> resultado =query.list();
-//        finalizarTransacao();
-//
-//        if(resultado.size()==0) {
-//        	return null;
-//        }
-//		return resultado;
 		return null;
 	}
 	
