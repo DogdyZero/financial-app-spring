@@ -1,5 +1,6 @@
 package br.com.financial_app.controller;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,6 +39,21 @@ public class UsuarioController {
 	@GetMapping("/teste") 
 	public Resultado teste() {
 		return new Resultado("Teste efetuado com sucesso!");
+	}
+	
+	@CrossOrigin
+	@PostMapping 
+	public List<Usuario> listagem() {
+		List<EntidadeDominio> entidades = facade.buscar(new Usuario(), "All");
+		if(entidades!=null) {
+			List<Usuario> usuarios = new ArrayList<Usuario>();
+			for(EntidadeDominio entidade : entidades) {
+				Usuario u = (Usuario)entidade;
+				usuarios.add(u);
+			}
+			return usuarios;
+		}
+		return 	null;
 	}
 	
 

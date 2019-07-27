@@ -56,14 +56,19 @@ public abstract class AbstractDAO implements IDAO{
 	public List<EntidadeDominio> consulta(EntidadeDominio entidade) {
 		
 		List<EntidadeDominio> entidades =  new ArrayList<>();
-		
 		try {
 			Object obj = invokeGenericsMethods();
-			if (obj!=null) {
-				EntidadeDominio e = (EntidadeDominio) obj;
-				entidades.add(e);
-				return entidades;
+			if(obj!=null) {
+				if(obj.getClass().equals(ArrayList.class)) {
+					return (List<EntidadeDominio>) obj;
+				} else {
+					entidades.add((EntidadeDominio) obj);
+					return entidades;
+				}
+			} else {
+				return null;
 			}
+
 			
 		} catch (NoSuchMethodException | SecurityException | IllegalAccessException | IllegalArgumentException
 				| InvocationTargetException e) {
@@ -127,24 +132,32 @@ public abstract class AbstractDAO implements IDAO{
 			}	
 		}
 		// criar array e invocar os metodos
-		Object[] invocarMetodos = new Object[parametros.length];
-		i=parametros.length-1;
-		for(String s : objMetodos) {
+		Object[] invocarMetodos =null;
+		Method method;
+		
+		// invocar o método de entrada do repositorio identificado
+		if(i!=0) {
+			 invocarMetodos = new Object[parametros.length];
+			i=parametros.length-1;
+			for(String s : objMetodos) {
 				Method m = classeEntidade.getMethod(s);
 				invocarMetodos[i] = m.invoke(entidade);
 				i--;
+			}
+			method = nomeRepositorio.getMethod(tipoParametro,objType);
+			return method.invoke(repository, invocarMetodos);
+		} else {
+			tipoParametro = "find"+param;
+			method = nomeRepositorio.getMethod(tipoParametro);
+			return method.invoke(repository);
+			
 		}
+
+//		if(resultado !=null) {
+//			return resultado;
+//		}
 		
-		// invocar o método de entrada do repositorio identificado
-		Method method = nomeRepositorio.getMethod(tipoParametro,objType);
-		
-		Object resultado = method.invoke(repository, invocarMetodos);
-		
-		if(resultado !=null) {
-			return resultado;
-		}
-		
-		return null;
+//		return null;
 		
 	}
 	
