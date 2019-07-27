@@ -27,6 +27,9 @@ public class Usuario extends EntidadeDominio {
 	
 	public Usuario() {
 	}
+	public Usuario(long id) {
+		this.id = id;
+	}
 
 	public Usuario(String nome, String senha) {
 		this.login = nome;
