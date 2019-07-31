@@ -4,10 +4,12 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.stereotype.Service;
 
 import br.com.financial_app.domain.EntidadeDominio;
+import br.com.financial_app.domain.Usuario;
 import br.com.financial_app.repository.EntidadeRepository;
 
 @Service
@@ -54,7 +56,7 @@ public abstract class AbstractDAO implements IDAO{
 	 */
 
 	public List<EntidadeDominio> consulta(EntidadeDominio entidade) {
-		
+
 		List<EntidadeDominio> entidades =  new ArrayList<>();
 		try {
 			Object obj = invokeGenericsMethods();
@@ -68,8 +70,6 @@ public abstract class AbstractDAO implements IDAO{
 			} else {
 				return null;
 			}
-
-			
 		} catch (NoSuchMethodException | SecurityException | IllegalAccessException | IllegalArgumentException
 				| InvocationTargetException e) {
 			e.printStackTrace();
@@ -83,7 +83,6 @@ public abstract class AbstractDAO implements IDAO{
 		// pegar a classe que entro repositorio para pegar a interface
 		Class<?> classeRepositorio = repository.getClass();
 		Class<?>[] interfaces = classeRepositorio.getInterfaces();
-
 		// criar o tipo da consulta no repositório
 		String param = this.tipoConsulta;
 		String tipoParametro = "findBy"+param;
@@ -95,7 +94,7 @@ public abstract class AbstractDAO implements IDAO{
 		// verificar se na interface tem o nome da classe
 		// OBS: como a consulta é pelo nome da classe, poderá ocorrer problemas, caso exista
 		// classes com nomes iguais em pacotes diferentes
-		// caso seja métodos herdados da JpaRepositorio, tipo findById / findByAll não será localizado
+		// não funciona com findById
 		for(Class<?> inter: interfaces) {
 			if(inter.getName().contains(classeEntidade.getSimpleName())) {
 				nomeRepositorio = inter;
@@ -146,19 +145,12 @@ public abstract class AbstractDAO implements IDAO{
 			}
 			method = nomeRepositorio.getMethod(tipoParametro,objType);
 			return method.invoke(repository, invocarMetodos);
-		} else {
+		} else  {
 			tipoParametro = "find"+param;
 			method = nomeRepositorio.getMethod(tipoParametro);
 			return method.invoke(repository);
-			
 		}
 
-//		if(resultado !=null) {
-//			return resultado;
-//		}
-		
-//		return null;
-		
 	}
 	
 	public String getTipoConsulta() {
