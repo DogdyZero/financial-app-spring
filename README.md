@@ -3,30 +3,35 @@
 projeto que introduz o conceito do framework spring, o projeto ainda esta em desenvolvimento
 
 Objetivo:
-Elaborar uma aplicação utilizando o framework spring utilizando a RestController para receber as requisições de um projeto angular
-na qual simula uma aplicação de gerenciamento financeiro.
+Elaborar uma pequena aplicação utilizando o framework spring afim de receber requisições restfull de um client angular.
 
-Pontos a alterar:
-O projeto foi elaborado a partir de uma aplicação JSF, portanto as queries ainda estão no padrão hibernate adotadas no projeto JSF,
-ou seja, o projeto não implementa a interface JPARepository nas DAOs, não tem as configurações na propeties e sim ainda na 
-hibernate.cfg.xml
+Descrição:
+-foi migrado o projeto jsf para o projeto spring, as principais mudanças adotas foi a controller que passou a ser rest, implementado a interface JpaRepository para consultas basicas no banco de dados, e um access token (JWT) para um teste com a camada de segurança
 
 Este projeto foi hospedado inicialmente no heroku
-requisição rest de teste
+requisição rest de teste para capturar o acess Token
 requisição post, parametro objeto usuario, (login,senha);
-url: https://financial-app-v2.herokuapp.com/login
+url: https://financial-app-v2.herokuapp.com/oauth/token
 
 Exemplo requisição httpClient - TypeScript
 
 logar(usuario:Usuario){
-		let url = 'https://financial-app-v2.herokuapp.com/login';
+	let url = 'https://financial-app-v2.herokuapp.com/oauth/token';
 		
-		this.http.post(url,{
-			'login':usuario.login,
-			'senha':usuario.senha
-		},{headers:{
-			'Accept':'application/json'}
-		}).subscribe(data =>{
-			console.log(data);
-		})
+	let client='angular';
+	let grant_type = 'password';
+	let username = usuario.login;
+	let password = usuario.senha;
+
+	let body = `client=${client}&grant_type=${grant_type}&username=${username}&password=${password}`;
+
+	this.http.post(url,body,
+
+	{headers:{
+		'Content-Type':'application/x-www-form-urlencoded',
+		'Authorization':'Basic YW5ndWxhcjphbmd1bGFy'
+		}
+	}).subscribe(data=>{
+		console.log(data);
+	})
 }
